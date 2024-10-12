@@ -21,7 +21,7 @@ if DISCORD_TOKEN == "" and MONGODB_CONNECTION == "":
     raise ValueError("DISCORD_TOKEN or MONGODB_CONNECTION not set")
 
 
-DEFAULT_PREFIX = "$"
+DEFAULT_PREFIX = "<"
 
 
 client: MongoClient[Dict[str, Any]] = MongoClient(MONGODB_CONNECTION)

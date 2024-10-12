@@ -27,24 +27,10 @@ bot = commands.Bot(
 # please don't spam me asking to be added.  if you send something interesting to me i will add you to the list.
 # If your name is in the list and you use the command '>amicool' you'll get a nice message.
 cool_names = [
-    "nullpxl",
-    "Yiggles",
-    "JohnHammond",
-    "voidUpdate",
-    "Michel Ney",
-    "theKidOfArcrania",
-    "l14ck3r0x01",
-    "hasu",
-    "KFBI",
-    "mrFu",
-    "warlock_rootx",
-    "d347h4ck",
-    "tourpan",
-    "careless_finch",
-    "fumenoid",
-    "_wh1t3r0se_",
-    "The_Crazyman",
-    "0x0elliot",
+    "thefireskull",
+    "Seadyot",
+    "iHeyHey",
+    "Inryatt"
 ]
 # This is intended to be circumvented; the idea being that people will change their names to people in this list just so >amicool works for them, and I think that's funny.
 
@@ -65,58 +51,8 @@ async def prefix(ctx: Context | None, prefix: str):
         await ctx.send(f"Prefix set to `{prefix}`!")
 
     await bot.change_presence(
-        activity=discord.Game(name=f"{prefix}help | {prefix}source")
+        activity=discord.Game(name=f"")
     )
-
-
-@bot.command()
-async def source(ctx: Context):
-    """
-    Get the source code for this bot.
-    """
-    await ctx.send(config_vars.SRC_URL)
-
-
-@bot.command()
-async def request(ctx: Context, feature: str):
-    """
-    Request a feature for the bot.
-
-    If the feature is helpful, your name will be added to the 'cool names' list!
-
-    Parameters
-    ----------
-    feature : str
-        The feature you would like to request.
-    """
-    # Bot sends a dm to creator with the name of the user and their request.
-    creator = await bot.fetch_user(230827776637272064)
-    authors_name = str(ctx.author)
-    await creator.send(f""":pencil: {authors_name}: {feature}""")
-    await ctx.send(f""":pencil: Thanks, "{feature}" has been requested!""")
-
-
-@bot.command()
-async def report(ctx: Context, error_report: str):
-    """
-    Report an issue with the bot.
-
-    If the issue is helpful, your name will be added to the 'cool names' list!
-
-    Parameters
-    ----------
-    error_report : str
-        The issue you would like to report.
-    """
-    # Bot sends a dm to creator with the name of the user and their report.
-    creator = await bot.fetch_user(230827776637272064)
-    authors_name = str(ctx.author)
-    await creator.send(f""":triangular_flag_on_post: {authors_name}: {error_report}""")
-    await ctx.send(
-        f""":triangular_flag_on_post: Thanks for the help, "{
-            error_report}" has been reported!"""
-    )
-
 
 @bot.command()
 async def amicool(ctx: Context):
@@ -128,14 +64,11 @@ async def amicool(ctx: Context):
         await ctx.send("You are very cool :]")
     else:
         await ctx.send("lolno")
-        await ctx.send(
-            "Psst, kid.  Want to be cool?  Find an issue and report it or request a feature!"
-        )
 
 
 @bot.command()
 @commands.has_permissions(manage_guild=True)
-# @commands.is_owner() # Uncomment this line if you want to restrict this command.
+@commands.is_owner() # Uncomment this line if you want to restrict this command.
 async def reload(ctx: Context, extension: str | None = None):
     """
     Reload a cog.
@@ -165,7 +98,7 @@ async def reload(ctx: Context, extension: str | None = None):
 
 @bot.command()
 @commands.has_permissions(manage_guild=True)
-# @commands.is_owner() # Uncomment this line if you want to restrict this command.
+@commands.is_owner() # Uncomment this line if you want to restrict this command.
 async def unload(ctx: Context, extension: str):
     """
     Unload a cog.
@@ -184,7 +117,7 @@ async def unload(ctx: Context, extension: str):
 
 @bot.command()
 @commands.has_permissions(manage_guild=True)
-# @commands.is_owner() # Uncomment this line if you want to restrict this command.
+@commands.is_owner() # Uncomment this line if you want to restrict this command.
 async def load(ctx: Context, extension: str):
     """
     Load a cog.
@@ -257,7 +190,7 @@ async def on_command_error(ctx: Context, error: commands.CommandError):
     else:
         code = hex(int(time()))
         await ctx.send(
-            f"An unexpected error occurred. Please contact the bot creator. ID: {code}"
+            f"An unexpected error occurred. Please contact @thefireskull."
         )
         print(f"[{code}] Uncaught Error: " + str(error))
         traceback.print_exception(type(error), error, error.__traceback__)

@@ -274,7 +274,7 @@ class CTF(commands.Cog):
     async def end(self, ctx: Context):
         # This command is deprecated, but due to getting so many DMs from people who didn't use >help, I've decided to just have this as my solution.
         await ctx.send(
-            'You can now use either `>ctf delete` (which will delete all data), or `>ctf archive/over` \
+            'You can now use either `<ctf delete` (which will delete all data), or `<ctf archive/over` \
 which will move the channel and delete the role, but retain challenge info(`>config archive_category \
 "archive category"` to specify where to archive.'
         )
@@ -346,11 +346,11 @@ which will move the channel and delete the role, but retain challenge info(`>con
             + ">"
         )
         challenge = {strip_string(str(name), whitelist): status}
-        ctf = server.find_one({"name": str(ctx.message.channel)})
+        ctf_channel = server.find_one({"name": str(ctx.message.channel)})
         try:  # If there are existing challenges already...
-            if ctf is None:
+            if ctf_channel is None:
                 raise KeyError
-            challenges: dict[str, str] = ctf["challenges"]
+            challenges: dict[str, str] = ctf_channel["challenges"]
             challenges.update(challenge)
         except:
             challenges = challenge
@@ -420,10 +420,10 @@ which will move the channel and delete the role, but retain challenge info(`>con
         if ctx.guild is None:
             raise commands.NoPrivateMessage
         # Typos can happen (remove a ctf challenge from the list)
-        ctf = teamdb[str(ctx.guild.id)].find_one({"name": str(ctx.message.channel)})
-        if ctf is None:
+        ctf_channel = teamdb[str(ctx.guild.id)].find_one({"name": str(ctx.message.channel)})
+        if ctf_channel is None:
             return
-        challenges = ctf["challenges"]
+        challenges = ctf_channel["challenges"]
         whitelist = set(
             string.ascii_letters
             + string.digits
@@ -477,11 +477,11 @@ which will move the channel and delete the role, but retain challenge info(`>con
             except CredentialsNotFound as cnfm:
                 return await ctx.send(str(cnfm))
             ctfd_challs = getChallenges(url, user_pass[0], user_pass[1])
-            ctf = teamdb[str(ctx.guild.id)].find_one({"name": str(ctx.message.channel)})
+            ctf_channel = teamdb[str(ctx.guild.id)].find_one({"name": str(ctx.message.channel)})
             try:  # If there are existing challenges already...
-                if ctf is None:
+                if ctf_channel is None:
                     raise KeyError
-                challenges: dict[str, str] = ctf["challenges"]
+                challenges: dict[str, str] = ctf_channel["challenges"]
                 challenges.update(ctfd_challs)
             except:
                 challenges = ctfd_challs
@@ -552,7 +552,7 @@ which will move the channel and delete the role, but retain challenge info(`>con
                 user_pass = pin.content.split("name:")[1].split(" password:")
                 return user_pass
         raise CredentialsNotFound(
-            'Set credentials with `>ctf setcreds "username" "password"`'
+            'Set credentials with `<ctf setcreds "username" "password"`'
         )
 
     @staticmethod
@@ -587,12 +587,12 @@ which will move the channel and delete the role, but retain challenge info(`>con
         # list the challenges in the current ctf.
         ctf_challenge_list = []
         server = teamdb[str(ctx.guild.id)]
-        ctf = server.find_one({"name": str(ctx.message.channel)})
+        ctf_channel = server.find_one({"name": str(ctx.message.channel)})
         try:
-            if ctf is None:
+            if ctf_channel is None:
                 raise KeyError
             ctf_challenge_list: list[str] = []
-            for k, v in ctf["challenges"].items():
+            for k, v in ctf_channel["challenges"].items():
                 challenge = f"[{k}]: {v}\n"
                 ctf_challenge_list.append(challenge)
 
