@@ -154,7 +154,7 @@ class CTF(commands.Cog):
             )
 
     @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
-    @commands.has_permissions(manage_channels=True)
+    @commands.has_role('member')
     @commands.guild_only()
     @ctf.command(aliases=["new"])
     async def create(self, ctx: Context, name: str):
@@ -236,7 +236,7 @@ class CTF(commands.Cog):
         await ctx.send(f"`{str(ctx.message.channel)}` deleted from db")
 
     @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
-    @commands.has_permissions(manage_channels=True)
+    @commands.has_role('member')
     @ctf.command(aliases=["over"])
     @in_ctf_channel()
     async def archive(self, ctx: Context):
@@ -261,6 +261,8 @@ class CTF(commands.Cog):
             servarchive = "ARCHIVE"  # default
 
         category = discord.utils.get(ctx.guild.categories, name=servarchive)
+        await ctx.send(f"Archiving in category: {category}")
+
         if (
             category == None
         ):  # Checks if category exists, if it doesn't it will create it.
@@ -268,16 +270,6 @@ class CTF(commands.Cog):
             category = discord.utils.get(ctx.guild.categories, name=servarchive)
         if isinstance(ctx.message.channel, discord.TextChannel):
             await ctx.message.channel.edit(sync_permissions=True, category=category)
-
-    @ctf.command(hidden=True)
-    @in_ctf_channel()
-    async def end(self, ctx: Context):
-        # This command is deprecated, but due to getting so many DMs from people who didn't use >help, I've decided to just have this as my solution.
-        await ctx.send(
-            'You can now use either `<ctf delete` (which will delete all data), or `<ctf archive/over` \
-which will move the channel and delete the role, but retain challenge info(`>config archive_category \
-"archive category"` to specify where to archive.'
-        )
 
     @commands.bot_has_permissions(manage_roles=True)
     @ctf.command()

@@ -17,7 +17,7 @@ intents.message_content = True
 intents.dm_messages = True
 
 bot = commands.Bot(
-    command_prefix=">",
+    command_prefix="<",
     allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False),
     intents=intents,
 )
@@ -190,7 +190,7 @@ async def on_command_error(ctx: Context, error: commands.CommandError):
     else:
         code = hex(int(time()))
         await ctx.send(
-            f"An unexpected error occurred. Please contact @thefireskull."
+            f"An unexpected error occurred. Please contact @thefireskull"
         )
         print(f"[{code}] Uncaught Error: " + str(error))
         traceback.print_exception(type(error), error, error.__traceback__)
