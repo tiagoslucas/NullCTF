@@ -132,3 +132,27 @@ The following commands are the ones you will most likely want to pay attention t
 1. Build the project with Docker using the command `docker build`.
     * Note: You may need to set `pymongo==3.10.1` or a similar version in the `requirements.txt` file.
 1. Invite the bot to your server. You can do this by going to the bot settings page on the Discord Developer Portal and generating an invite link.
+
+### Configuration (`.env`)
+
+The `.env` file is not committed to the repository, since it holds secrets. The bot creates it (with empty values) on first run; fill in the following:
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `DISCORD_TOKEN` | yes | — | Your bot token from the Discord Developer Portal. |
+| `MONGODB_CONNECTION` | yes | — | Connection string for your MongoDB cluster. |
+| `CTF_COMMAND_NAME` | no | `ctf` | Name of the command group for managing CTFs |
+| `MEMBER_ROLE` | no | *permission fallback* | Role allowed to create and archive CTFs. When unset, anyone who can manage channels may. |
+| `ADMIN_ROLE` | no | *permission fallback* | Role allowed to delete CTFs and skip the creation rate limit. When unset, anyone with the administrator permission may. |
+
+Example:
+
+```
+DISCORD_TOKEN="your-bot-token"
+MONGODB_CONNECTION="mongodb+srv://user:password@cluster/?retryWrites=true&w=majority"
+CTF_COMMAND_NAME="ctf"
+MEMBER_ROLE=""
+ADMIN_ROLE=""
+```
+
+Settings are read once at startup, so restart the bot after changing them.
