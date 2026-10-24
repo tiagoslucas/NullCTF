@@ -17,6 +17,7 @@ After inviting to your server, it is recommended that you first configure the ca
 
 * When you create a ctf, it will by default go into the "CTF" category (it will create one if it is not present), and when you archive a ctf it will go into the ARCHIVE category.
 * You can configure this with `>config ctf_category "Category for CTFs"` and `>config archive_category "Category for Archived CTFs"`
+* The commands for managing CTFs live under the `ctf` group (e.g. `>ctf create`). If you prefer a different name for your instance (e.g. your club's acronym), set `CTF_COMMAND_NAME` in the `.env` file and the group will be renamed accordingly.
 
 ---
 

@@ -7,7 +7,7 @@ import requests
 from discord.ext import commands
 
 from common import Context
-from config_vars import serverdb, teamdb
+from config_vars import CTF_COMMAND_NAME, serverdb, teamdb
 
 # All commands relating to server specific CTF data
 # Credentials provided for pulling challenges from the CTFd platform are NOT stored in the database.
@@ -142,7 +142,7 @@ class CTF(commands.Cog):
         self.bot = bot
         self.last_create: dict[int, float] = {}
 
-    @commands.group()
+    @commands.group(name=CTF_COMMAND_NAME)
     async def ctf(self, ctx: Context):
         """
         Command group for managing CTFs.
@@ -564,7 +564,7 @@ class CTF(commands.Cog):
                 user_pass = pin.content.split("name:")[1].split(" password:")
                 return user_pass
         raise CredentialsNotFound(
-            'Set credentials with `<ctf setcreds "username" "password"`'
+            f'Set credentials with `<{CTF_COMMAND_NAME} setcreds "username" "password"`'
         )
 
     @staticmethod

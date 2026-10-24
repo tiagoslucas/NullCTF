@@ -23,6 +23,10 @@ if DISCORD_TOKEN == "" and MONGODB_CONNECTION == "":
 
 DEFAULT_PREFIX = "<"
 
+# Name of the command group used to manage CTFs (e.g. `<ctf create`).
+# Set CTF_COMMAND_NAME in .env to rename it for your instance (e.g. an acronym).
+CTF_COMMAND_NAME = os.getenv("CTF_COMMAND_NAME", "ctf")
+
 
 client: MongoClient[Dict[str, Any]] = MongoClient(MONGODB_CONNECTION)
 
