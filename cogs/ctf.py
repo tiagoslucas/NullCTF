@@ -210,7 +210,7 @@ class CTF(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
-    @commands.has_permissions(manage_channels=True)
+    @commands.has_role('member')
     @ctf.command()
     @in_ctf_channel()
     async def delete(self, ctx: Context):
