@@ -7,7 +7,14 @@ import requests
 from discord.ext import commands
 
 from common import Context
-from config_vars import ADMIN_ROLE, CTF_COMMAND_NAME, MEMBER_ROLE, serverdb, teamdb
+from config_vars import (
+    ADMIN_ROLE,
+    COMMAND_PREFIX,
+    CTF_COMMAND_NAME,
+    MEMBER_ROLE,
+    serverdb,
+    teamdb,
+)
 
 # All commands relating to server specific CTF data
 # Credentials provided for pulling challenges from the CTFd platform are NOT stored in the database.
@@ -605,7 +612,7 @@ class CTF(commands.Cog):
                 user_pass = pin.content.split("name:")[1].split(" password:")
                 return user_pass
         raise CredentialsNotFound(
-            f'Set credentials with `<{CTF_COMMAND_NAME} setcreds "username" "password"`'
+            f'Set credentials with `{COMMAND_PREFIX}{CTF_COMMAND_NAME} setcreds "username" "password"`'
         )
 
     @staticmethod

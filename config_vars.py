@@ -21,7 +21,9 @@ if DISCORD_TOKEN == "" and MONGODB_CONNECTION == "":
     raise ValueError("DISCORD_TOKEN or MONGODB_CONNECTION not set")
 
 
-DEFAULT_PREFIX = "<"
+# The command prefix (e.g. `>ctf create`). Set COMMAND_PREFIX in .env to
+# change it for your instance.
+COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", ">")
 
 # Name of the command group used to manage CTFs (e.g. `<ctf create`).
 # Set CTF_COMMAND_NAME in .env to rename it for your instance (e.g. an acronym).

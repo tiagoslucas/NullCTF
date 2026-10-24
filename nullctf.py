@@ -19,7 +19,7 @@ intents.message_content = True
 intents.dm_messages = True
 
 bot = commands.Bot(
-    command_prefix="<",
+    command_prefix=config_vars.COMMAND_PREFIX,
     allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False),
     intents=intents,
 )
@@ -183,7 +183,7 @@ async def on_ready():
 
     await prefix.callback(  # pyright: ignore[reportCallIssue]
         None,  # pyright: ignore[reportArgumentType]
-        config_vars.DEFAULT_PREFIX,
+        config_vars.COMMAND_PREFIX,
     )
 
     success: list[str] = []
