@@ -9,7 +9,7 @@ from common import EventT
 
 load_dotenv()
 
-SRC_URL = "https://github.com/FieryRMS/TuningBot"
+SRC_URL = "https://github.com/NullPxl/NullCTF"
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN", "")
 MONGODB_CONNECTION = os.getenv("MONGODB_CONNECTION", "")
