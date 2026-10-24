@@ -27,6 +27,11 @@ DEFAULT_PREFIX = "<"
 # Set CTF_COMMAND_NAME in .env to rename it for your instance (e.g. an acronym).
 CTF_COMMAND_NAME = os.getenv("CTF_COMMAND_NAME", "ctf")
 
+# Roles allowed to manage CTFs. When unset, permissions are used instead:
+# manage channels for members, administrator for admins.
+MEMBER_ROLE = os.getenv("MEMBER_ROLE", "")
+ADMIN_ROLE = os.getenv("ADMIN_ROLE", "")
+
 
 client: MongoClient[Dict[str, Any]] = MongoClient(MONGODB_CONNECTION)
 

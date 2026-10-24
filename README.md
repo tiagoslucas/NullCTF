@@ -18,6 +18,7 @@ After inviting to your server, it is recommended that you first configure the ca
 * When you create a ctf, it will by default go into the "CTF" category (it will create one if it is not present), and when you archive a ctf it will go into the ARCHIVE category.
 * You can configure this with `<config ctf_category "Category for CTFs"` and `<config archive_category "Category for Archived CTFs"`
 * The commands for managing CTFs live under the `ctf` group (e.g. `<ctf create`). If you prefer a different name for your instance (e.g. your club's acronym), set `CTF_COMMAND_NAME` in the `.env` file and the group will be renamed accordingly.
+* Who may manage CTFs is controlled by roles: `MEMBER_ROLE` can create and archive, `ADMIN_ROLE` can also delete and skip the creation rate limit. Set both in the `.env` file. When unset, the bot falls back to Discord permissions (manage channels for members, administrator for admins), so a fresh instance works without any role setup.
 
 ---
 
@@ -25,7 +26,7 @@ After inviting to your server, it is recommended that you first configure the ca
 
 The following commands are the ones you will most likely want to pay attention to, although if you do not expect to use this bot to manage CTFs you can skip this category and go down to CTFTime commands.
 
-* `<ctf create "ctf name"`  This is the command you'll use when you want to begin a new CTF.  This command will make a text channel with your supplied name under the designated CTF category. *Requires the member role; limited to one channel per hour (the Admin role is exempt)*
+* `<ctf create "ctf name"`  This is the command you'll use when you want to begin a new CTF.  This command will make a text channel with your supplied name under the designated CTF category. *Requires the member role (or the manage channels permission by default); limited to one channel per hour, admins are exempt*
 ![ctf create](https://i.imgur.com/6PUPIX3.png)
 
 *NOTE: the following ctf specific commands will only be accepted under the channel created for that ctf.  This is to avoid clashes with multiple ctfs going on in the same server.*
@@ -49,9 +50,9 @@ The following commands are the ones you will most likely want to pay attention t
 
 > *IMPORTANT: credentials are never stored outside of the pinned message on Discord. They are needed to pull challenge data and solve state from the CTFd platform.*
 
-* `<ctf archive` Move the CTF channel into the Archive category.  *Requires the member role*
+* `<ctf archive` Move the CTF channel into the Archive category.  *Requires the member role (or the manage channels permission by default)*
 
-* `<ctf delete` Delete the CTF info from the database, and delete the role. *Requires the Admin role*
+* `<ctf delete` Delete the CTF info from the database, and delete the role. *Requires the admin role (or the administrator permission by default)*
 
 ---
 

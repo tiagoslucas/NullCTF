@@ -7,7 +7,7 @@ import requests
 from discord.ext import commands
 
 from common import Context
-from config_vars import CTF_COMMAND_NAME, serverdb, teamdb
+from config_vars import ADMIN_ROLE, CTF_COMMAND_NAME, MEMBER_ROLE, serverdb, teamdb
 
 # All commands relating to server specific CTF data
 # Credentials provided for pulling challenges from the CTFd platform are NOT stored in the database.
@@ -30,6 +30,47 @@ def in_ctf_channel():
             return False
 
     return commands.check(tocheck)
+
+
+def _has_role(ctx: Context, role_name: str) -> bool:
+    return any(role.name == role_name for role in getattr(ctx.author, "roles", []))
+
+
+def _member_ok(ctx: Context) -> bool:
+    if MEMBER_ROLE:
+        return _has_role(ctx, MEMBER_ROLE)
+    return ctx.author.guild_permissions.manage_channels
+
+
+def _admin_ok(ctx: Context) -> bool:
+    if ADMIN_ROLE:
+        return _has_role(ctx, ADMIN_ROLE)
+    return ctx.author.guild_permissions.administrator
+
+
+async def is_member(ctx: Context) -> bool:
+    """Check for creating/archiving CTFs: the configured member role, or the
+    manage channels permission when no role is configured."""
+    if ctx.guild is None:
+        raise commands.NoPrivateMessage
+    if _member_ok(ctx):
+        return True
+    if MEMBER_ROLE:
+        raise commands.MissingRole(MEMBER_ROLE)
+    raise commands.MissingPermissions(["manage_channels"])
+
+
+async def is_admin(ctx: Context) -> bool:
+    """Check for deleting CTFs and skipping the create rate limit: the
+    configured admin role, or the administrator permission when no role is
+    configured."""
+    if ctx.guild is None:
+        raise commands.NoPrivateMessage
+    if _admin_ok(ctx):
+        return True
+    if ADMIN_ROLE:
+        raise commands.MissingRole(ADMIN_ROLE)
+    raise commands.MissingPermissions(["administrator"])
 
 
 def strip_string(tostrip: str, whitelist: list[str] | set[str]):
@@ -159,14 +200,14 @@ class CTF(commands.Cog):
             )
 
     @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
-    @commands.has_role('member')
+    @commands.check(is_member)
     @commands.guild_only()
     @ctf.command(aliases=["new"])
     async def create(self, ctx: Context, name: str):
         """
-        create a text channel and role in the CTF category for a ctf (must have permissions to manage channels)*
+        create a text channel and role in the CTF category for a ctf (requires the member role or manage channels permission)*
 
-        Limited to one channel per hour for Members; Admins are exempt.
+        Limited to one channel per hour; admins are exempt.
 
         Parameters
         ----------
@@ -175,8 +216,8 @@ class CTF(commands.Cog):
         """
         if ctx.guild is None:
             raise commands.NoPrivateMessage
-        # Rate limit channel creation for Members (Admins are exempt)
-        if discord.utils.get(ctx.author.roles, name="Admin") is None:
+        # Rate limit channel creation for members (admins are exempt)
+        if not _admin_ok(ctx):
             elapsed = time.monotonic() - self.last_create.get(ctx.author.id, 0.0)
             remaining = CREATE_COOLDOWN_SECONDS - elapsed
             if remaining > 0:
@@ -230,14 +271,14 @@ class CTF(commands.Cog):
         await ctx.message.add_reaction("✅")
 
     @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
-    @commands.has_role('Admin')
+    @commands.check(is_admin)
     @ctf.command()
     @in_ctf_channel()
     async def delete(self, ctx: Context):
         """
         Delete the ctf role, and entry from the database for the ctf.
 
-        **Required Role: Admin** (Members should use `archive` instead)
+        **Admin only** — members should use `archive` instead.
 
         __This command will delete all data associated with the ctf.__
         """
@@ -256,7 +297,7 @@ class CTF(commands.Cog):
         await ctx.send(f"`{str(ctx.message.channel)}` deleted from db")
 
     @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
-    @commands.has_role('member')
+    @commands.check(is_member)
     @ctf.command(aliases=["over"])
     @in_ctf_channel()
     async def archive(self, ctx: Context):

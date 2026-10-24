@@ -214,6 +214,10 @@ async def on_command_error(ctx: Context, error: commands.CommandError):
         await ctx.send(
             "You do not have the appropriate permissions to run this command."
         )
+    elif isinstance(error, commands.MissingRole):
+        await ctx.send(
+            "You do not have the required role to run this command."
+        )
     elif isinstance(error, commands.BotMissingPermissions):
         await ctx.send("I don't have sufficient permissions!")
     elif isinstance(error, commands.NoPrivateMessage):
