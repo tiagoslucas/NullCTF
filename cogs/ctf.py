@@ -1,4 +1,5 @@
 import string
+import time
 import traceback
 
 import discord
@@ -11,6 +12,9 @@ from config_vars import serverdb, teamdb
 # All commands relating to server specific CTF data
 # Credentials provided for pulling challenges from the CTFd platform are NOT stored in the database.
 # they are stored in a pinned message in the discord channel.
+
+# Members can create at most one CTF channel per hour; Admins are exempt.
+CREATE_COOLDOWN_SECONDS = 60 * 60
 
 
 def in_ctf_channel():
@@ -136,6 +140,7 @@ class CTF(commands.Cog):
     def __init__(self, bot: commands.Bot):
         super().__init__()
         self.bot = bot
+        self.last_create: dict[int, float] = {}
 
     @commands.group()
     async def ctf(self, ctx: Context):
@@ -161,6 +166,8 @@ class CTF(commands.Cog):
         """
         create a text channel and role in the CTF category for a ctf (must have permissions to manage channels)*
 
+        Limited to one channel per hour for Members; Admins are exempt.
+
         Parameters
         ----------
         name : str
@@ -168,6 +175,17 @@ class CTF(commands.Cog):
         """
         if ctx.guild is None:
             raise commands.NoPrivateMessage
+        # Rate limit channel creation for Members (Admins are exempt)
+        if discord.utils.get(ctx.author.roles, name="Admin") is None:
+            elapsed = time.monotonic() - self.last_create.get(ctx.author.id, 0.0)
+            remaining = CREATE_COOLDOWN_SECONDS - elapsed
+            if remaining > 0:
+                minutes = int(remaining // 60)
+                await ctx.send(
+                    f"Rate limit: 1 CTF channel per hour. Try again in {minutes} "
+                    "minute(s), or ask an Admin to create it for you."
+                )
+                return
         # Create a new channel in the CTF category (default='CTF' or configured with the configuration extension)
         try:
             sconf = serverdb[str(ctx.guild.id) + "-CONF"]
@@ -206,18 +224,20 @@ class CTF(commands.Cog):
         await ctx.guild.create_role(name=ctf_name, mentionable=True)
         ctf_info = {"name": ctf_name, "text_channel": ctf_name}
         server.update_one({"name": ctf_name}, {"$set": ctf_info}, upsert=True)
+        # Only count the creation against the rate limit once it actually succeeded
+        self.last_create[ctx.author.id] = time.monotonic()
         # Give a visual confirmation of completion.
         await ctx.message.add_reaction("✅")
 
     @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
-    @commands.has_role('member')
+    @commands.has_role('Admin')
     @ctf.command()
     @in_ctf_channel()
     async def delete(self, ctx: Context):
         """
         Delete the ctf role, and entry from the database for the ctf.
 
-        **Required Permissions: Manage Channels**
+        **Required Role: Admin** (Members should use `archive` instead)
 
         __This command will delete all data associated with the ctf.__
         """
