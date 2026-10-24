@@ -1,3 +1,5 @@
+import os
+import subprocess
 import traceback
 from time import time
 
@@ -35,6 +37,23 @@ cool_names = [
 # This is intended to be circumvented; the idea being that people will change their names to people in this list just so >amicool works for them, and I think that's funny.
 
 
+def get_git_hash() -> str:
+    # Captured at startup so the version command reports the commit the bot is
+    # actually running, even if the repo on disk is pulled forward afterwards.
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=os.path.dirname(os.path.abspath(__file__)),
+            stderr=subprocess.DEVNULL,
+            text=True,
+        ).strip()
+    except Exception:
+        return "unknown"  # not running from a git checkout (e.g. Docker)
+
+
+RUNNING_COMMIT = get_git_hash()
+
+
 @bot.command()
 async def prefix(ctx: Context | None, prefix: str):
     """
@@ -64,6 +83,18 @@ async def amicool(ctx: Context):
         await ctx.send("You are very cool :]")
     else:
         await ctx.send("lolno")
+
+
+@bot.command()
+async def version(ctx: Context):
+    """
+    Show the git commit the bot is currently running.
+    """
+    authors_name = str(ctx.author).split("#")[0]
+    if authors_name not in cool_names:
+        await ctx.send("lolno")
+        return
+    await ctx.send(f"Running commit: `{RUNNING_COMMIT[:12]}`")
 
 
 @bot.command()
